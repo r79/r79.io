@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ejb-jar version="3.1" xmlns="http://java.sun.com/xml/ns/javaee"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/ejb-jar_3_1.xsd">
+    <display-name>HelloWorldXML</display-name>
+    <enterprise-beans>
+        <session>
+            <ejb-name>HelloWorldXMLBean</ejb-name>
+            <business-remote>server.HelloWorldXML</business-remote>
+            <ejb-class>server.HelloWorldXMLBean</ejb-class>
+            <session-type>Stateless</session-type>
+        </session>
+    </enterprise-beans>
+    
+    <assembly-descriptor>
+        <interceptor-binding>
+            <ejb-name>HelloWorldXMLBean</ejb-name>
+            <interceptor-class>ch.zli.m223.interceptor.HelloInterceptor</interceptor-class>
+        </interceptor-binding>
+    </assembly-descriptor>
+
+</ejb-jar>

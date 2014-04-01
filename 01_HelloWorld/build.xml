@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!-- Compilieren, Archivieren und Deployen von EJB Applikationen:
+     
+     init    : Löschen und Erstellen von temporären Verzeichnisse
+     compile : Compilieren der serverseitigen Java Dateien
+     jar     : JAR bilden
+     ear     : EAR bilden
+     deploy  : EAR Datei deployen	 
+     
+     Author  : ZLI/stme
+     Datum   : 2013
+     Version : 3.0
+-->
+
+<project name="EJB Packaging and Deployment Script" default="deploy" basedir=".">
+	<!-- Build Properties: enthält Parameter für den Build Prozess (build.xml) -->
+	<property file="${basedir}/properties/build.properties" />
+
+	<!-- Property Directory: enthält Property-Dateien -->
+	<property name="properties.dir" value="${basedir}/properties" />
+
+	<!-- Build Classpath: Classpath Parameter für den Build Prozess -->
+	<path id="build.classpath">
+		<fileset dir="${jboss.home}/modules">
+			<include name="**/*.jar" />
+		</fileset>
+		<fileset dir="${m223.home}/lib">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<!-- init: Löschen und Erstellen von temporären Verzeichnisse -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<target name="init">
+
+		<!-- temporäre Verzeichnisse löschen -->
+		<delete dir="${build.dir}" />
+
+		<!-- temporäre Verzeichnisse erstellen -->
+		<mkdir dir="${build.dir}" />
+		<mkdir dir="${class.dir}" />
+		<mkdir dir="${jar.dir}" />
+		<mkdir dir="${ear.dir}" />
+
+	</target>
+
+	<!-- compile: Compilieren der serverseitigen Java Dateien   -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<target name="compile" depends="init">
+
+		<!-- Server Klassen kompilieren -->
+		<javac destdir="${class.dir}" classpathref="build.classpath" includeantruntime="false">
+			<src path="${ejb.dir}" />
+		</javac>
+
+	</target>
+
+	<!-- jar: JAR bilden                                        -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<target name="jar" depends="compile">
+
+		<!-- JAR Bean Archivedatei bilden -->
+		<jar jarfile="${jar.dir}/${jar.name}.jar">
+
+			<!-- META-INF definieren -->
+			<metainf dir="${dd.dir}" includes="*.xml" excludes="application.xml" />
+
+			<!-- alle serverseitigen class Dateien ... -->
+			<fileset dir="${class.dir}">
+				<include name="**" />
+			</fileset>
+
+			<!-- MANIFEST definieren -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Projektpfad" value="${basedir}" />
+				<section name="ejb">
+					<attribute name="Specification-Title" value="${app.name}" />
+				</section>
+			</manifest>
+
+		</jar>
+
+	</target>
+
+	<!-- ear: EAR bilden                                        -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<target name="ear" depends="jar">
+
+		<!-- EAR Bean Archivedatei bilden -->
+		<jar jarfile="${ear.dir}/${ear.name}.ear">
+
+			<!-- META-INF definieren -->
+			<metainf dir="${dd.dir}" includes="application.xml" />
+
+			<!-- alle JAR Dateien ... -->
+			<fileset dir="${jar.dir}">
+				<include name="**" />
+			</fileset>
+
+			<!-- Interceptoren ...  -->
+			<fileset dir="${m223.home}/server-libraries">
+				<include name="lib/*.jar" />
+			</fileset>
+
+			<!-- MANIFEST definieren -->
+			<manifest>
+				<attribute name="Built-By" value="${user.name}" />
+				<attribute name="Projektpfad" value="${basedir}" />
+				<section name="jar">
+					<attribute name="Specification-Title" value="${app.name}" />
+				</section>
+			</manifest>
+
+		</jar>
+	</target>
+
+	<!-- deploy: EAR Datei deployen                             -->
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+	<target name="deploy" depends="ear">
+
+		<!-- bestehendes Deployment löschen -->
+		<!--delete file="${jboss.deploy.dir}/${ear.dir}/${ear.name}.ear" /-->
+
+		<!-- EAR in Deployment Ordner kopieren -->
+		<copy todir="${jboss.deploy.dir}">
+			<fileset dir="${ear.dir}" />
+		</copy>
+
+	</target>
+
+</project>
