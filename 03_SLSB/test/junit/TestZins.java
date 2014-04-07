@@ -106,7 +106,7 @@ public class TestZins {
 
 	// Aufräumen (Resscourcen lösen / löschen)
 	@AfterClass
-	public static void clanUp() {
+	public static void cleanUp() {
 		try {
 			ic.close();
 		} catch (NamingException e) {

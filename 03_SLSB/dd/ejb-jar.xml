@@ -5,7 +5,9 @@
     <session>
       <ejb-name>RateBean</ejb-name>
       <env-entry>
-
+				<env-entry-name>Rate</env-entry-name>
+				<env-entry-type>java.lang.Float</env-entry-type>
+				<env-entry-value>1.25</env-entry-value>
       </env-entry>
     </session>
   </enterprise-beans>

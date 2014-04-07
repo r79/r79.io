@@ -11,11 +11,11 @@ public class ZinsBean implements Zins {
 	private float rate;
 
 	public double calculate(double amount, double rate, int years) {
-		return 0.0;
+		return amount * Math.pow((rate / 100.0) + 1.0, (double)years); 
 	}
 
 	public double calculate(double amount, int years) {
-		return 0.0;
+		return amount * Math.pow((0.5 / 100.0) + 1.0, (double) years);
 	}
 
 	public double getRate() {
